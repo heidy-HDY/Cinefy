@@ -193,12 +193,13 @@ const styles = StyleSheet.create({
     paddingVertical: 50,
     backgroundColor: "#fff",
   },
-    searchContainer: {
+
+  searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    alignSelf: "center", 
-    maxWidth: 300,       
-    width: "90%",        
+    alignSelf: "center",
+    maxWidth: 300,
+    width: "90%",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
@@ -206,89 +207,105 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
   },
-      searchWrapper: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 10,
-    },
+
+  searchWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+  },
 
   profileIcon: {
-      width: 40,
-      height: 40,
-      marginRight: 10,
-      marginTop:-15,
+    width: 40,
+    height: 40,
+    marginRight: 10,
+    marginTop: -15,
   },
+
   leftIcon: {
     width: 24,
     height: 24,
     marginRight: 8,
-    borderRadius:3,
+    borderRadius: 3,
   },
+
   inputBusqueda: {
     flex: 1,
     height: 40,
     fontSize: 16,
   },
+
   searchIcon: {
     width: 20,
     height: 20,
     tintColor: "#888",
     marginLeft: 8,
   },
+
   header: {
     fontSize: 20,
     fontWeight: "bold",
     marginVertical: 12,
     marginLeft: 12,
   },
+
   flatList: {
     marginBottom: 16,
   },
+
+  // ===== TARJETA PELÍCULA =====
   card: {
-    width: 170,
+    width: 190,
     marginRight: 13,
     backgroundColor: "#fff",
     borderRadius: 10,
     overflow: "hidden",
   },
+
   imageContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
+
   posterImage: {
     width: 190,
     height: 210,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
+
   imagePlaceholder: {
     backgroundColor: "#e0e0e0ff",
     justifyContent: "center",
     alignItems: "center",
   },
+
   placeholderText: {
     textAlign: "center",
     fontSize: 12,
     color: "#555",
   },
+
   cardFooter: {
     paddingHorizontal: 8,
     paddingVertical: 6,
     justifyContent: "space-between",
     alignItems: "center",
   },
+
   movieTitle: {
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
     width: "100%",
   },
+
   fecha: {
     fontSize: 12,
     color: "#555",
     marginTop: 4,
   },
+
   botonCard: {
     width: 180,
     height: 240,
@@ -303,6 +320,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 4,
   },
+
   estrenosText: {
     color: "#fff",
     fontSize: 16,
@@ -310,24 +328,30 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 10,
   },
+
+  // ===== GÉNEROS =====
   generoCard: {
     width: 150,
-    height: 140,
+    height: 170,
     marginRight: 10,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#ffffffff",
     alignItems: "center",
   },
+
   generoImage: {
     width: 140,
-    height: 100,
+    height: 90,
     resizeMode: "cover",
   },
+
   generoTitulo: {
     fontSize: 14,
     fontWeight: "bold",
     marginTop: 6,
     textAlign: "center",
+    paddingHorizontal: 4,
+    flexWrap: "wrap",
   },
 });
