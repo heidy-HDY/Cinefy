@@ -245,12 +245,13 @@ const styles = StyleSheet.create({
 
   posterImage: {
     width: 190,
-    height: 220,
+    height: 200,
   },
 
   cardFooter: {
     padding: 8,
     alignItems: "center",
+    gap: 4, // ayuda en web
   },
 
   movieTitle: {
