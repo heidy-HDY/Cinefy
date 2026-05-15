@@ -16,7 +16,7 @@ export default function BotonVer({ title, onPress }: Props) {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "rgb(113, 33, 33)",
+    backgroundColor: "#ba1717ff",
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 8,
