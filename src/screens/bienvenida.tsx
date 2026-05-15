@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Platform } from "react-native";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function Bienvenida({ navigation }: any) {
+
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace("Principal");
@@ -12,15 +13,26 @@ export default function Bienvenida({ navigation }: any) {
     return () => clearTimeout(timer);
   }, [navigation]);
 
+  // ================= WEB =================
+  if (Platform.OS === "web") {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.webText}>Bienvenid@</Text>
+        <Text style={styles.webText}>a</Text>
+        <Text style={styles.webText}>Cinefy</Text>
+      </View>
+    );
+  }
+
+  // ================= MOBILE =================
   return (
     <View style={styles.container}>
       <MaskedView
-        style={styles.maskedView}
         maskElement={
           <View style={styles.center}>
-            <Text style={styles.maskText}>Bienvenid@</Text>
-            <Text style={styles.maskText}>a</Text>
-            <Text style={styles.maskText}>Cinefy</Text>
+            <Text style={styles.mobileText}>Bienvenid@</Text>
+            <Text style={styles.mobileText}>a</Text>
+            <Text style={styles.mobileText}>Cinefy</Text>
           </View>
         }
       >
@@ -29,14 +41,7 @@ export default function Bienvenida({ navigation }: any) {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradient}
-        >
-          {/* ESTE TEXTO DEBE SER INVISIBLE SIEMPRE */}
-          <View style={styles.center}>
-            <Text style={styles.hiddenText}>Bienvenid@</Text>
-            <Text style={styles.hiddenText}>a</Text>
-            <Text style={styles.hiddenText}>Cinefy</Text>
-          </View>
-        </LinearGradient>
+        />
       </MaskedView>
     </View>
   );
@@ -45,36 +50,41 @@ export default function Bienvenida({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
-  },
-
-  maskedView: {
-    width: 300,
-    height: 200,
   },
 
   center: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
 
   gradient: {
-    flex: 1,
+    width: 320,
+    height: 180,
   },
 
-  maskText: {
-    fontSize: 33,
+  mobileText: {
+    fontSize: 38,
     fontWeight: "bold",
-    color: "white", // IMPORTANTE: máscara = blanco
+    color: "black",
     textAlign: "center",
   },
 
-  hiddenText: {
-    fontSize: 33,
+  // ===== WEB gradient text =====
+  webText: {
+    fontSize: 38,
     fontWeight: "bold",
-    opacity: 0, // clave para evitar texto negro en web
-  },
+    textAlign: "center",
+
+    color: "transparent",
+
+    backgroundImage:
+      "linear-gradient(90deg, #ff0004, rgb(168, 34, 0))",
+
+    backgroundClip: "text",
+
+    WebkitBackgroundClip: "text",
+  } as any,
 });
