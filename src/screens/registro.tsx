@@ -48,8 +48,16 @@ export default function Registro({ navigation }: any) {
         creado: new Date(),
       });
 
-      Alert.alert("Éxito", "Usuario registrado con éxito 🎉");
-      navigation.navigate("Inicio");
+      Alert.alert(
+        "Registro exitoso 🎉",
+        "Tu cuenta fue creada correctamente",
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Inicio"),
+          },
+        ]
+      );
     } catch (error: any) {
       console.log("❌ Error:", error.code, error.message);
       if (error.code === "auth/email-already-in-use") {
