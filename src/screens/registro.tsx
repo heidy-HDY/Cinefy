@@ -36,17 +36,26 @@ export default function Registro({ navigation }: any) {
     if (Object.keys(newErrors).length > 0) return;
 
     try {
-      // Crear usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("📡 Registrando usuario...");
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+
       const user = userCredential.user;
 
-      // Guardar datos extra en Firestore
+      console.log("✅ Usuario creado:", user.uid);
+
       await setDoc(doc(db, "usuarios", user.uid), {
         nombre,
         email,
         descripcion,
         creado: new Date(),
       });
+
+      console.log("💾 Guardado en Firestore");
 
       Alert.alert(
         "Registro exitoso 🎉",
@@ -58,15 +67,25 @@ export default function Registro({ navigation }: any) {
           },
         ]
       );
+
     } catch (error: any) {
-      console.log("❌ Error:", error.code, error.message);
+      console.log("❌ ERROR COMPLETO:", error);
+
+      let mensaje = "No se pudo registrar el usuario";
+
       if (error.code === "auth/email-already-in-use") {
-        Alert.alert("Error", "Este correo ya está registrado");
-      } else if (error.code === "auth/invalid-email") {
-        Alert.alert("Error", "El correo no es válido");
-      } else {
-        Alert.alert("Error", "No se pudo registrar el usuario");
+        mensaje = "Este correo ya está registrado";
       }
+
+      if (error.code === "auth/invalid-email") {
+        mensaje = "El correo no es válido";
+      }
+
+      if (error.code === "auth/weak-password") {
+        mensaje = "La contraseña es muy débil";
+      }
+
+      Alert.alert("Error", mensaje);
     }
   };
 
