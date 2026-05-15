@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   TextInput,
+  Animated,
 } from "react-native";
 
 import { getNowPlaying } from "../services/api";
@@ -19,6 +20,25 @@ export default function Informacion({ navigation }: any) {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
 
+  // 🔥 ANIMACIÓN ESTRENOS
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 5,
+      }),
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
   useEffect(() => {
     getNowPlaying("CO")
       .then((data) => {
@@ -27,7 +47,7 @@ export default function Informacion({ navigation }: any) {
         const hace30dias = new Date();
         hace30dias.setDate(hoy.getDate() - 30);
 
-        if (!data || !Array.isArray(data.results)) {
+        if (!Array.isArray(data?.results)) {
           setCartelera([]);
           return;
         }
@@ -42,7 +62,6 @@ export default function Informacion({ navigation }: any) {
 
         setCartelera(filtradas);
       })
-      .catch((e) => console.log(e))
       .finally(() => setCargando(false));
   }, []);
 
@@ -71,26 +90,7 @@ export default function Informacion({ navigation }: any) {
             placeholder="Buscar películas..."
             value={busqueda}
             onChangeText={setBusqueda}
-            onSubmitEditing={() => {
-              const texto = busqueda.trim();
-              if (texto) {
-                navigation.navigate("BusquedaResultados", { query: texto });
-                setBusqueda("");
-              }
-            }}
           />
-
-          <TouchableOpacity
-            onPress={() => {
-              const texto = busqueda.trim();
-              if (texto) {
-                navigation.navigate("BusquedaResultados", { query: texto });
-                setBusqueda("");
-              }
-            }}
-          >
-            <Image source={require("../../assets/lupa.png")} style={styles.searchIcon} />
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -100,19 +100,28 @@ export default function Informacion({ navigation }: any) {
       <FlatList
         data={cartelera}
         horizontal
-        showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.id.toString()}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         renderItem={({ item }) => {
 
           if (item.tipo === "boton") {
             return (
-              <TouchableOpacity
-                style={styles.botonCard}
-                onPress={() => navigation.navigate("Estrenos")}
+              <Animated.View
+                style={{
+                  transform: [{ scale: scaleAnim }],
+                  opacity: opacityAnim,
+                }}
               >
-                <Text style={styles.estrenosText}>🚀 Ver próximos estrenos</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.botonCard}
+                  onPress={() => navigation.navigate("Estrenos")}
+                >
+                  <Text style={styles.estrenosText}>
+                    🚀 Ver próximos estrenos
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
             );
           }
 
@@ -122,16 +131,10 @@ export default function Informacion({ navigation }: any) {
               <TouchableOpacity
                 onPress={() => navigation.navigate("Detalles", { id: item.id })}
               >
-                {item.poster_path ? (
-                  <Image
-                    source={{ uri: `https://image.tmdb.org/t/p/w200${item.poster_path}` }}
-                    style={styles.posterImage}
-                  />
-                ) : (
-                  <View style={styles.posterImage}>
-                    <Text>Sin imagen</Text>
-                  </View>
-                )}
+                <Image
+                  source={{ uri: `https://image.tmdb.org/t/p/w200${item.poster_path}` }}
+                  style={styles.posterImage}
+                />
               </TouchableOpacity>
 
               <View style={styles.cardFooter}>
@@ -160,8 +163,8 @@ export default function Informacion({ navigation }: any) {
       <FlatList
         data={generos}
         horizontal
-        showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.id.toString()}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -205,26 +208,16 @@ const styles = StyleSheet.create({
   },
 
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "80%",
+    flex: 1,
     maxWidth: 300,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
     paddingHorizontal: 10,
-    backgroundColor: "#f9f9f9",
   },
 
   inputBusqueda: {
-    flex: 1,
     height: 40,
-  },
-
-  searchIcon: {
-    width: 20,
-    height: 20,
-    tintColor: "#888",
   },
 
   header: {
@@ -234,24 +227,24 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
 
-  // CARTAS PELICULAS
+  // ===== PELICULAS =====
   card: {
     width: 190,
     marginRight: 13,
     backgroundColor: "#fff",
     borderRadius: 10,
     overflow: "hidden",
+    elevation: 3,
   },
 
   posterImage: {
     width: 190,
-    height: 200,
+    height: 210,
   },
 
   cardFooter: {
     padding: 8,
     alignItems: "center",
-    gap: 4, // ayuda en web
   },
 
   movieTitle: {
@@ -268,12 +261,12 @@ const styles = StyleSheet.create({
 
   botonCard: {
     width: 190,
-    height: 220,
+    height: 210,
     marginRight: 12,
     backgroundColor: "#ba1717",
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
   },
 
   estrenosText: {
@@ -283,26 +276,27 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  // GENEROS
+  // ===== GENEROS (MEJORADOS) =====
   generoCard: {
-    width: 160,
-    height: 160,
+    width: 175,
+    height: 175,
     marginRight: 12,
-    borderRadius: 10,
+    borderRadius: 12,
     overflow: "hidden",
     backgroundColor: "#fff",
     alignItems: "center",
   },
 
   generoImage: {
-    width: 160,
-    height: 100,
+    width: 175,
+    height: 115,
+    resizeMode: "cover",
   },
 
   generoTitulo: {
     fontSize: 15,
     fontWeight: "bold",
-    marginTop: 8,
+    marginTop: 6,
     textAlign: "center",
   },
 });
