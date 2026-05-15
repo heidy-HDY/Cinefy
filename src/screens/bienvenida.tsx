@@ -31,7 +31,7 @@ export default function Bienvenida({navigation}:any) {
         }
       >
         <LinearGradient
-          colors={["#ff0004ff", "#a12000ff"]}
+          colors={["#ff0004ff", "rgb(168, 34, 0)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradient}
