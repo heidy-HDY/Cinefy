@@ -9,47 +9,41 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
+
 import { getNowPlaying } from "../services/api";
 import BotonVer from "../components/botonVer";
 
 export default function Informacion({ navigation }: any) {
 
-  //- cartelera: guarda las películas que se están mostrando actualmente.
-  // cargando: controla si se está esperando la respuesta de la API.
-  // busqueda: almacena el texto que el usuario escribe en la barra de búsqueda.
   const [cartelera, setCartelera] = useState<any[]>([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
-    getNowPlaying("CO")//- Al cargar la pantalla, se llama a la función getNowPlaying("CO") para obtener películas en cartelera en Colombia.
+    getNowPlaying("CO")
       .then((data) => {
-        const hoy = new Date();// Se calcula un rango de fechas: desde hoy hasta hace 30 días.
+
+        const hoy = new Date();
         const hace30dias = new Date();
         hace30dias.setDate(hoy.getDate() - 30);
 
         if (!data || !Array.isArray(data.results)) {
-          console.warn("No se recibieron resultados válidos");
           setCartelera([]);
           return;
         }
 
-        const filtradas = data.results.filter((p: any) => {//Se filtran las películas que fueron estrenadas en ese rango de tiempo.
-          if (!p || !p.release_date) return false;
+        const filtradas = data.results.filter((p: any) => {
+          if (!p?.release_date) return false;
           const fecha = new Date(p.release_date);
           return fecha >= hace30dias && fecha <= hoy;
         });
 
-        //Se agrega un botón especial al final de la lista para ver los próximos estrenos.
         filtradas.push({ id: "boton-estrenos", tipo: "boton" });
-        setCartelera(filtradas);//- Se guarda la lista filtrada en el estado cartelera
+
+        setCartelera(filtradas);
       })
-      .catch((error) => {
-        console.error("Error al obtener películas:", error);
-      })
-      .finally(() => {
-        setCargando(false);
-      });
+      .catch((e) => console.log(e))
+      .finally(() => setCargando(false));
   }, []);
 
   const generos = [
@@ -64,63 +58,57 @@ export default function Informacion({ navigation }: any) {
     return <ActivityIndicator size="large" color="purple" style={{ flex: 1 }} />;
   }
 
-          
   return (
     <View style={styles.screen}>
-      {/* 🔍 Barra de búsqueda con lupa */}
-   <View style={styles.searchWrapper}>
-    <Image
-      source={require("../../assets/img2.png")} 
-      style={styles.profileIcon}
-    />
-  <View style={styles.searchContainer}>
-      <TextInput
-        style={styles.inputBusqueda}
-        placeholder="Buscar películas..."
-        value={busqueda}
-        onChangeText={setBusqueda}
-        onSubmitEditing={() => {
-          const texto = busqueda.trim();
-          if (texto.length > 0) {
-            navigation.navigate("BusquedaResultados", { query: texto });
-            setBusqueda("");
-          }
-        }}
-        returnKeyType="search"
-      />
-      <TouchableOpacity
-        // Al escribir y presionar enter o la lupa, se navega a la pantalla "BusquedaResultados" con el texto ingresado.
-        onPress={() => {
-          const texto = busqueda.trim();
-          if (texto.length > 0) {
-            navigation.navigate("BusquedaResultados", { query: texto });
-            setBusqueda("");
-          }
-        }}
-      >
-        <Image
-          source={require("../../assets/lupa.png")}
-          style={styles.searchIcon}
-        />
-      </TouchableOpacity>
-    </View>
-  </View>
 
+      {/* SEARCH */}
+      <View style={styles.searchWrapper}>
+        <Image source={require("../../assets/img2.png")} style={styles.profileIcon} />
+
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.inputBusqueda}
+            placeholder="Buscar películas..."
+            value={busqueda}
+            onChangeText={setBusqueda}
+            onSubmitEditing={() => {
+              const texto = busqueda.trim();
+              if (texto) {
+                navigation.navigate("BusquedaResultados", { query: texto });
+                setBusqueda("");
+              }
+            }}
+          />
+
+          <TouchableOpacity
+            onPress={() => {
+              const texto = busqueda.trim();
+              if (texto) {
+                navigation.navigate("BusquedaResultados", { query: texto });
+                setBusqueda("");
+              }
+            }}
+          >
+            <Image source={require("../../assets/lupa.png")} style={styles.searchIcon} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* CARTELERA */}
       <Text style={styles.header}>En cartelera</Text>
-      <FlatList
-       //- Se muestra una lista horizontal de películas.Si es peliculas de estreno se muestra un botón para ver estrenos.Si es una película, se muestra su imagen, título, fecha y botón "Ver".
 
-        style={styles.flatList}
+      <FlatList
         data={cartelera}
-        keyExtractor={(item) => item.id.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         renderItem={({ item }) => {
+
           if (item.tipo === "boton") {
             return (
               <TouchableOpacity
-                style={[styles.card, styles.botonCard]}
+                style={styles.botonCard}
                 onPress={() => navigation.navigate("Estrenos")}
               >
                 <Text style={styles.estrenosText}>🚀 Ver próximos estrenos</Text>
@@ -130,9 +118,9 @@ export default function Informacion({ navigation }: any) {
 
           return (
             <View style={styles.card}>
+
               <TouchableOpacity
                 onPress={() => navigation.navigate("Detalles", { id: item.id })}
-                style={styles.imageContainer}
               >
                 {item.poster_path ? (
                   <Image
@@ -140,33 +128,40 @@ export default function Informacion({ navigation }: any) {
                     style={styles.posterImage}
                   />
                 ) : (
-                  <View style={[styles.posterImage, styles.imagePlaceholder]}>
-                    <Text style={styles.placeholderText}>Sin imagen</Text>
+                  <View style={styles.posterImage}>
+                    <Text>Sin imagen</Text>
                   </View>
                 )}
               </TouchableOpacity>
+
               <View style={styles.cardFooter}>
-                <Text style={styles.movieTitle} numberOfLines={1} ellipsizeMode="tail">
+                <Text style={styles.movieTitle} numberOfLines={1}>
                   {item.title}
                 </Text>
-                <Text style={styles.fecha}>{item.release_date}</Text>
+
+                <Text style={styles.fecha}>
+                  {item.release_date}
+                </Text>
+
                 <BotonVer
                   title="Ver"
                   onPress={() => navigation.navigate("Detalles", { id: item.id })}
                 />
               </View>
+
             </View>
           );
         }}
       />
 
+      {/* GENEROS */}
       <Text style={styles.header}>Sugerencias por género</Text>
-      <FlatList
-        data={generos}//- Se muestra cada género como una tarjeta con imagen y nombre. Al tocarla, se navega a una vista filtrada por ese género.
 
-        keyExtractor={(item) => item.id.toString()}
+      <FlatList
+        data={generos}
         horizontal
         showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -183,29 +178,17 @@ export default function Informacion({ navigation }: any) {
           </TouchableOpacity>
         )}
       />
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
   screen: {
     flex: 1,
     paddingVertical: 50,
     backgroundColor: "#fff",
-  },
-
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-    maxWidth: 300,
-    width: "90%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    backgroundColor: "#f9f9f9",
-    paddingHorizontal: 10,
-    marginBottom: 10,
   },
 
   searchWrapper: {
@@ -219,27 +202,29 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginRight: 10,
-    marginTop: -15,
   },
 
-  leftIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 8,
-    borderRadius: 3,
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "80%",
+    maxWidth: 300,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: "#f9f9f9",
   },
 
   inputBusqueda: {
     flex: 1,
     height: 40,
-    fontSize: 16,
   },
 
   searchIcon: {
     width: 20,
     height: 20,
     tintColor: "#888",
-    marginLeft: 8,
   },
 
   header: {
@@ -249,48 +234,22 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
 
-  flatList: {
-    marginBottom: 16,
-  },
-
-  // ===== TARJETAS PELÍCULAS =====
+  // CARTAS PELICULAS
   card: {
     width: 190,
     marginRight: 13,
     backgroundColor: "#fff",
     borderRadius: 10,
-    overflow: "visible",
-    paddingBottom: 10,
-  },
-
-  imageContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    overflow: "hidden",
   },
 
   posterImage: {
     width: 190,
-    height: 260,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-
-  imagePlaceholder: {
-    backgroundColor: "#e0e0e0ff",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  placeholderText: {
-    textAlign: "center",
-    fontSize: 12,
-    color: "#555",
+    height: 220,
   },
 
   cardFooter: {
-    paddingHorizontal: 8,
-    paddingVertical: 10,
-    justifyContent: "space-between",
+    padding: 8,
     alignItems: "center",
   },
 
@@ -298,29 +257,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     textAlign: "center",
-    width: "100%",
   },
 
   fecha: {
     fontSize: 12,
     color: "#555",
-    marginTop: 4,
-    marginBottom: 8,
+    marginBottom: 6,
   },
 
   botonCard: {
     width: 190,
-    height: 260,
+    height: 220,
     marginRight: 12,
     backgroundColor: "#ba1717",
-    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
+    borderRadius: 10,
   },
 
   estrenosText: {
@@ -328,32 +280,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
-    paddingHorizontal: 10,
   },
 
-  // ===== GÉNEROS =====
+  // GENEROS
   generoCard: {
-    width: 170,
-    height: 170,
+    width: 160,
+    height: 160,
     marginRight: 12,
     borderRadius: 10,
-    overflow: "visible",
+    overflow: "hidden",
     backgroundColor: "#fff",
     alignItems: "center",
   },
 
   generoImage: {
-    width: 170,
-    height: 110,
-    borderRadius: 10,
-    resizeMode: "cover",
+    width: 160,
+    height: 100,
   },
 
   generoTitulo: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
     marginTop: 8,
     textAlign: "center",
-    paddingHorizontal: 4,
   },
 });
