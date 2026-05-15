@@ -253,13 +253,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  // ===== TARJETA PELÍCULA =====
+  // ===== TARJETAS PELÍCULAS =====
   card: {
     width: 190,
     marginRight: 13,
     backgroundColor: "#fff",
     borderRadius: 10,
-    overflow: "hidden",
+    overflow: "visible",
+    paddingBottom: 10,
   },
 
   imageContainer: {
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
 
   posterImage: {
     width: 190,
-    height: 210,
+    height: 260,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
@@ -288,7 +289,7 @@ const styles = StyleSheet.create({
 
   cardFooter: {
     paddingHorizontal: 8,
-    paddingVertical: 6,
+    paddingVertical: 10,
     justifyContent: "space-between",
     alignItems: "center",
   },
@@ -304,11 +305,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#555",
     marginTop: 4,
+    marginBottom: 8,
   },
 
   botonCard: {
-    width: 180,
-    height: 240,
+    width: 190,
+    height: 260,
     marginRight: 12,
     backgroundColor: "#ba1717",
     borderRadius: 10,
@@ -331,27 +333,27 @@ const styles = StyleSheet.create({
 
   // ===== GÉNEROS =====
   generoCard: {
-    width: 150,
+    width: 170,
     height: 170,
-    marginRight: 10,
+    marginRight: 12,
     borderRadius: 10,
-    overflow: "hidden",
-    backgroundColor: "#ffffffff",
+    overflow: "visible",
+    backgroundColor: "#fff",
     alignItems: "center",
   },
 
   generoImage: {
-    width: 140,
-    height: 90,
+    width: 170,
+    height: 110,
+    borderRadius: 10,
     resizeMode: "cover",
   },
 
   generoTitulo: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "bold",
-    marginTop: 6,
+    marginTop: 8,
     textAlign: "center",
     paddingHorizontal: 4,
-    flexWrap: "wrap",
   },
 });
