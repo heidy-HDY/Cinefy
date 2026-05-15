@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   TextInput,
-  Animated,
 } from "react-native";
 
 import { getNowPlaying } from "../services/api";
@@ -20,24 +19,18 @@ export default function Informacion({ navigation }: any) {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
 
-  // 🔥 ANIMACIÓN ESTRENOS
-  const scaleAnim = useRef(new Animated.Value(0.8)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
+  // 🔥 BÚSQUEDA FUNCIONAL (WEB + EXPO)
+  const handleSearch = () => {
+    const texto = busqueda.trim();
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        friction: 5,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+    if (!texto) return;
+
+    navigation.navigate("BusquedaResultados", {
+      query: texto,
+    });
+
+    setBusqueda("");
+  };
 
   useEffect(() => {
     getNowPlaying("CO")
@@ -62,6 +55,7 @@ export default function Informacion({ navigation }: any) {
 
         setCartelera(filtradas);
       })
+      .catch((e) => console.log(e))
       .finally(() => setCargando(false));
   }, []);
 
@@ -74,15 +68,20 @@ export default function Informacion({ navigation }: any) {
   ];
 
   if (cargando) {
-    return <ActivityIndicator size="large" color="purple" style={{ flex: 1 }} />;
+    return (
+      <ActivityIndicator size="large" color="purple" style={{ flex: 1 }} />
+    );
   }
 
   return (
     <View style={styles.screen}>
 
-      {/* SEARCH */}
+      {/* 🔍 SEARCH BAR */}
       <View style={styles.searchWrapper}>
-        <Image source={require("../../assets/img2.png")} style={styles.profileIcon} />
+        <Image
+          source={require("../../assets/img2.png")}
+          style={styles.profileIcon}
+        />
 
         <View style={styles.searchContainer}>
           <TextInput
@@ -90,38 +89,40 @@ export default function Informacion({ navigation }: any) {
             placeholder="Buscar películas..."
             value={busqueda}
             onChangeText={setBusqueda}
+            returnKeyType="search"
+            onSubmitEditing={handleSearch}
           />
+
+          <TouchableOpacity onPress={handleSearch}>
+            <Image
+              source={require("../../assets/lupa.png")}
+              style={styles.searchIcon}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
-      {/* CARTELERA */}
+      {/* 🎬 CARTELERA */}
       <Text style={styles.header}>En cartelera</Text>
 
       <FlatList
         data={cartelera}
         horizontal
-        keyExtractor={(item) => item.id.toString()}
         showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         renderItem={({ item }) => {
 
           if (item.tipo === "boton") {
             return (
-              <Animated.View
-                style={{
-                  transform: [{ scale: scaleAnim }],
-                  opacity: opacityAnim,
-                }}
+              <TouchableOpacity
+                style={styles.botonCard}
+                onPress={() => navigation.navigate("Estrenos")}
               >
-                <TouchableOpacity
-                  style={styles.botonCard}
-                  onPress={() => navigation.navigate("Estrenos")}
-                >
-                  <Text style={styles.estrenosText}>
-                    🚀 Ver próximos estrenos
-                  </Text>
-                </TouchableOpacity>
-              </Animated.View>
+                <Text style={styles.estrenosText}>
+                  🚀 Ver próximos estrenos
+                </Text>
+              </TouchableOpacity>
             );
           }
 
@@ -129,10 +130,14 @@ export default function Informacion({ navigation }: any) {
             <View style={styles.card}>
 
               <TouchableOpacity
-                onPress={() => navigation.navigate("Detalles", { id: item.id })}
+                onPress={() =>
+                  navigation.navigate("Detalles", { id: item.id })
+                }
               >
                 <Image
-                  source={{ uri: `https://image.tmdb.org/t/p/w200${item.poster_path}` }}
+                  source={{
+                    uri: `https://image.tmdb.org/t/p/w200${item.poster_path}`,
+                  }}
                   style={styles.posterImage}
                 />
               </TouchableOpacity>
@@ -148,7 +153,9 @@ export default function Informacion({ navigation }: any) {
 
                 <BotonVer
                   title="Ver"
-                  onPress={() => navigation.navigate("Detalles", { id: item.id })}
+                  onPress={() =>
+                    navigation.navigate("Detalles", { id: item.id })
+                  }
                 />
               </View>
 
@@ -157,14 +164,14 @@ export default function Informacion({ navigation }: any) {
         }}
       />
 
-      {/* GENEROS */}
+      {/* 🎭 GÉNEROS */}
       <Text style={styles.header}>Sugerencias por género</Text>
 
       <FlatList
         data={generos}
         horizontal
-        keyExtractor={(item) => item.id.toString()}
         showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingHorizontal: 8 }}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -208,16 +215,27 @@ const styles = StyleSheet.create({
   },
 
   searchContainer: {
-    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    width: "90%",
     maxWidth: 300,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
     paddingHorizontal: 10,
+    backgroundColor: "#f9f9f9",
   },
 
   inputBusqueda: {
+    flex: 1,
     height: 40,
+    minWidth: 0, // 🔥 IMPORTANTE PARA WEB
+  },
+
+  searchIcon: {
+    width: 20,
+    height: 20,
+    tintColor: "#888",
   },
 
   header: {
@@ -227,14 +245,13 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
 
-  // ===== PELICULAS =====
+  // 🎬 CARTAS
   card: {
     width: 190,
     marginRight: 13,
     backgroundColor: "#fff",
     borderRadius: 10,
     overflow: "hidden",
-    elevation: 3,
   },
 
   posterImage: {
@@ -264,9 +281,9 @@ const styles = StyleSheet.create({
     height: 210,
     marginRight: 12,
     backgroundColor: "#ba1717",
-    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 10,
   },
 
   estrenosText: {
@@ -276,7 +293,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  // ===== GENEROS (MEJORADOS) =====
+  // 🎭 GÉNEROS
   generoCard: {
     width: 175,
     height: 175,
@@ -290,7 +307,6 @@ const styles = StyleSheet.create({
   generoImage: {
     width: 175,
     height: 115,
-    resizeMode: "cover",
   },
 
   generoTitulo: {
