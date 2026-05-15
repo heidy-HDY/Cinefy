@@ -58,15 +58,19 @@ export default function Registro({ navigation }: any) {
       console.log("💾 Guardado en Firestore");
 
       Alert.alert(
-        "Registro exitoso 🎉",
-        "Tu cuenta fue creada correctamente",
-        [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate("Inicio"),
+      "Registro exitoso 🎉",
+      "Usuario creado correctamente",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            setTimeout(() => {
+              navigation.replace("Inicio");
+            }, 200);
           },
-        ]
-      );
+        },
+      ]
+    );
 
     } catch (error: any) {
       console.log("❌ ERROR COMPLETO:", error);
