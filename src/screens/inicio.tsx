@@ -134,7 +134,7 @@ export default function Inicio({ navigation }: any) {
 
       mostrarAlerta(
         "Éxito",
-        "Te enviamos un enlace a tu correo para restablecer tu contraseña."
+        "Te enviamos un enlace a tu correo para restablecer tu contraseña, revisa la bandeja principal o Spam."
       );
 
     } catch (error: any) {
