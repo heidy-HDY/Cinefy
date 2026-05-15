@@ -1,7 +1,7 @@
 //-Se importan los módulos necesarios para crear la interfaz, aplicar estilos, usar efectos secundarios (useEffect) y aplicar una máscara con degradado.
 
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet} from "react-native";
+import { View, Text, StyleSheet, Platform } from "react-native";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -18,35 +18,61 @@ export default function Bienvenida({navigation}:any) {
   },[navigation]);
 
   return (
-
-    //Se muestra un texto con efecto de degradado usando MaskedView y LinearGradient.
     <View style={styles.container}>
-      <MaskedView
-        maskElement={
-          <View style={styles.center}>
-            <Text style={styles.title}>Bienvenid@</Text>
-            <Text style={styles.title}>a</Text>
-            <Text style={styles.title}>Cinefy</Text>
-          </View>
-        }
-      >
+
+      {Platform.OS === "web" ? (
+
+        // VERSION WEB (NETLIFY)
         <LinearGradient
           colors={["#ff0004ff", "rgb(168, 34, 0)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradient}
         >
-          
           <View style={styles.center}>
-            <Text style={[styles.title, { opacity: 0 }]}>Bienvenid@</Text>
-            <Text style={[styles.title, { opacity: 0 }]}>a</Text>
-            <Text style={[styles.title, { opacity: 0 }]}>Cinefy</Text>
+            <Text style={styles.titleWeb}>Bienvenid@</Text>
+            <Text style={styles.titleWeb}>a</Text>
+            <Text style={styles.titleWeb}>Cinefy</Text>
           </View>
         </LinearGradient>
-      </MaskedView>
-      
+
+      ) : (
+
+        // VERSION MOVIL (EXPO)
+        <MaskedView
+          maskElement={
+            <View style={styles.center}>
+              <Text style={styles.title}>Bienvenid@</Text>
+              <Text style={styles.title}>a</Text>
+              <Text style={styles.title}>Cinefy</Text>
+            </View>
+          }
+        >
+          <LinearGradient
+            colors={["#ff0004ff", "rgb(168, 34, 0)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.gradient}
+          >
+            <View style={styles.center}>
+              <Text style={[styles.title, { opacity: 0 }]}>
+                Bienvenid@
+              </Text>
+
+              <Text style={[styles.title, { opacity: 0 }]}>
+                a
+              </Text>
+
+              <Text style={[styles.title, { opacity: 0 }]}>
+                Cinefy
+              </Text>
+            </View>
+          </LinearGradient>
+        </MaskedView>
+
+      )}
+
     </View>
-    
   );
 }
 
@@ -72,5 +98,10 @@ const styles = StyleSheet.create({
     height: 300,
     justifyContent: "center",
     alignItems: "center",
+  },
+    titleWeb: {
+    fontSize: 33,
+    fontWeight: "bold",
+    color: "white",
   },
 });
