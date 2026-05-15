@@ -12,18 +12,17 @@ export default function Bienvenida({ navigation }: any) {
     return () => clearTimeout(timer);
   }, [navigation]);
 
-  const Title = () => (
-    <View style={styles.textContainer}>
-      <Text style={styles.text}>Bienvenid@</Text>
-      <Text style={styles.text}>a</Text>
-      <Text style={styles.text}>Cinefy</Text>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <MaskedView
-        maskElement={<Title />}
+        style={styles.maskedView}
+        maskElement={
+          <View style={styles.center}>
+            <Text style={styles.maskText}>Bienvenid@</Text>
+            <Text style={styles.maskText}>a</Text>
+            <Text style={styles.maskText}>Cinefy</Text>
+          </View>
+        }
       >
         <LinearGradient
           colors={["#ff0004", "rgb(168, 34, 0)"]}
@@ -31,8 +30,12 @@ export default function Bienvenida({ navigation }: any) {
           end={{ x: 1, y: 0 }}
           style={styles.gradient}
         >
-          {/* Invisible text to define mask size */}
-          <Title />
+          {/* ESTE TEXTO DEBE SER INVISIBLE SIEMPRE */}
+          <View style={styles.center}>
+            <Text style={styles.hiddenText}>Bienvenid@</Text>
+            <Text style={styles.hiddenText}>a</Text>
+            <Text style={styles.hiddenText}>Cinefy</Text>
+          </View>
         </LinearGradient>
       </MaskedView>
     </View>
@@ -47,20 +50,31 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
 
-  textContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+  maskedView: {
+    width: 300,
+    height: 200,
   },
 
-  text: {
-    fontSize: 33,
-    fontWeight: "bold",
-    color: "black",
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   gradient: {
-    padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
+    flex: 1,
+  },
+
+  maskText: {
+    fontSize: 33,
+    fontWeight: "bold",
+    color: "white", // IMPORTANTE: máscara = blanco
+    textAlign: "center",
+  },
+
+  hiddenText: {
+    fontSize: 33,
+    fontWeight: "bold",
+    opacity: 0, // clave para evitar texto negro en web
   },
 });
