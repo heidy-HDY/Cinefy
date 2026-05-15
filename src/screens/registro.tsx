@@ -36,11 +36,18 @@ export default function Registro({ navigation }: any) {
     if (Object.keys(newErrors).length > 0) return;
 
     try {
-      // Crear usuario en Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("📡 Registrando usuario...");
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+
       const user = userCredential.user;
 
-      // Guardar datos extra en Firestore
+      console.log("✅ Usuario creado:", user.uid);
+
       await setDoc(doc(db, "usuarios", user.uid), {
         nombre,
         email,
@@ -48,17 +55,41 @@ export default function Registro({ navigation }: any) {
         creado: new Date(),
       });
 
-      Alert.alert("Éxito", "Usuario registrado con éxito 🎉");
-      navigation.navigate("Inicio");
+      console.log("💾 Guardado en Firestore");
+
+      Alert.alert(
+      "Registro exitoso 🎉",
+      "Usuario creado correctamente",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            setTimeout(() => {
+              navigation.replace("Inicio");
+            }, 200);
+          },
+        },
+      ]
+    );
+
     } catch (error: any) {
-      console.log("❌ Error:", error.code, error.message);
+      console.log("❌ ERROR COMPLETO:", error);
+
+      let mensaje = "No se pudo registrar el usuario";
+
       if (error.code === "auth/email-already-in-use") {
-        Alert.alert("Error", "Este correo ya está registrado");
-      } else if (error.code === "auth/invalid-email") {
-        Alert.alert("Error", "El correo no es válido");
-      } else {
-        Alert.alert("Error", "No se pudo registrar el usuario");
+        mensaje = "Este correo ya está registrado";
       }
+
+      if (error.code === "auth/invalid-email") {
+        mensaje = "El correo no es válido";
+      }
+
+      if (error.code === "auth/weak-password") {
+        mensaje = "La contraseña es muy débil";
+      }
+
+      Alert.alert("Error", mensaje);
     }
   };
 
@@ -103,45 +134,42 @@ export default function Registro({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, 
-  backgroundColor: "#fff", 
-  justifyContent: "center", 
-  alignItems: "center", 
-  padding: 20 
-},
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
   
-logo: { 
-  width: 310, 
-  height: 310, 
-  marginBottom: 1, 
-  top: -50 
-},
+  logo: {
+    width: 220,
+    height: 220,
+    marginBottom: 10,
+  },
 title: { 
-  fontSize: 28, 
-  fontWeight: "bold", 
-  marginBottom: 10, 
-  color: "#333", 
-  top: -90 
+   fontSize: 28,
+  fontWeight: "bold",
+  marginBottom: 20,
+  color: "#333",
 },
 input: { 
-  marginBottom: 6, 
-  top: -85 
+   marginBottom: 12,
+  width: "100%",
 },
 error: { 
-  color: "red", 
-  marginBottom: 10, 
-  top: -85, 
-  alignSelf: "flex-start", 
-  marginLeft: 45 
+  color: "red",
+  marginBottom: 10,
+  width: "100%",
+  paddingLeft: 10,
 },
 button: { 
-  backgroundColor: "#ba1717ff", 
-  padding: 13, 
-  borderRadius: 8, 
-  width: "40%", 
-  alignItems: "center", 
-  marginBottom: 10, 
-  top: -60 
+ backgroundColor: "#ba1717ff",
+  padding: 13,
+  borderRadius: 8,
+  width: "60%",
+  alignItems: "center",
+  marginTop: 15,
 },
 buttonText: { 
   color: "#fff", 
@@ -149,12 +177,11 @@ buttonText: {
   fontWeight: "500" 
 },
 button2: { 
-  backgroundColor: "#a6a6a6ff", 
-  padding: 13, 
-  borderRadius: 8, 
-  width: "30%", 
+ backgroundColor: "#a6a6a6ff",
+  padding: 13,
+  borderRadius: 8,
+  width: "50%",
   alignItems: "center",
-  top:-60
+  marginTop: 10,
 },
 });
-
