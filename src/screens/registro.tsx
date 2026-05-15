@@ -103,45 +103,42 @@ export default function Registro({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, 
-  backgroundColor: "#fff", 
-  justifyContent: "center", 
-  alignItems: "center", 
-  padding: 20 
-},
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
   
-logo: { 
-  width: 310, 
-  height: 310, 
-  marginBottom: 1, 
-  top: -50 
-},
+  logo: {
+    width: 220,
+    height: 220,
+    marginBottom: 10,
+  },
 title: { 
-  fontSize: 28, 
-  fontWeight: "bold", 
-  marginBottom: 10, 
-  color: "#333", 
-  top: -90 
+   fontSize: 28,
+  fontWeight: "bold",
+  marginBottom: 20,
+  color: "#333",
 },
 input: { 
-  marginBottom: 6, 
-  top: -85 
+   marginBottom: 12,
+  width: "100%",
 },
 error: { 
-  color: "red", 
-  marginBottom: 10, 
-  top: -85, 
-  alignSelf: "flex-start", 
-  marginLeft: 45 
+  color: "red",
+  marginBottom: 10,
+  width: "100%",
+  paddingLeft: 10,
 },
 button: { 
-  backgroundColor: "#ba1717ff", 
-  padding: 13, 
-  borderRadius: 8, 
-  width: "40%", 
-  alignItems: "center", 
-  marginBottom: 10, 
-  top: -60 
+ backgroundColor: "#ba1717ff",
+  padding: 13,
+  borderRadius: 8,
+  width: "60%",
+  alignItems: "center",
+  marginTop: 15,
 },
 buttonText: { 
   color: "#fff", 
@@ -149,12 +146,12 @@ buttonText: {
   fontWeight: "500" 
 },
 button2: { 
-  backgroundColor: "#a6a6a6ff", 
-  padding: 13, 
-  borderRadius: 8, 
-  width: "30%", 
+ backgroundColor: "#a6a6a6ff",
+  padding: 13,
+  borderRadius: 8,
+  width: "50%",
   alignItems: "center",
-  top:-60
+  marginTop: 10,
 },
 });
 
