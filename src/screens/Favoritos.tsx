@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+ import { Platform } from "react-native";
 import { View, Text, StyleSheet, FlatList, Image, ActivityIndicator, TouchableOpacity, Alert, SafeAreaView } from "react-native";
 import { auth, db } from "../../firebaseConfig";
 import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
@@ -37,41 +38,71 @@ export default function Favoritos() {
   );
 
   const eliminarTodos = async () => {
-    //- Muestra una alerta de confirmación.
-    //Si el usuario acepta, se eliminan todos los documentos de favoritos en Firestore.
-    //Se actualiza el estado para reflejar que ya no hay favoritos.
+    const usuario = auth.currentUser;
+    if (!usuario) return;
 
-    Alert.alert(
-      "Eliminar todos",
-      "¿Estás seguro de que quieres borrar todas tus películas favoritas?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: async () => {
-            const usuario = auth.currentUser;
-            if (!usuario) return;
+    const ejecutarEliminacion = async () => {
+      try {
+        const consulta = query(
+          collection(db, "favoritos"),
+          where("userId", "==", usuario.uid)
+        );
 
-            try {
-              const consulta = query(collection(db, "favoritos"), where("userId", "==", usuario.uid));
-              const resultado = await getDocs(consulta);
+        const resultado = await getDocs(consulta);
 
-              const eliminaciones = resultado.docs.map((docu) =>
-                deleteDoc(doc(db, "favoritos", docu.id))
-              );
+        const eliminaciones = resultado.docs.map((docu) =>
+          deleteDoc(doc(db, "favoritos", docu.id))
+        );
 
-              await Promise.all(eliminaciones);
-              setFavoritos([]);
-              alert("✅ Todos los favoritos han sido eliminados.");
-            } catch (error) {
-              console.log("❌ Error al eliminar favoritos:", error);
-              alert("No se pudieron eliminar los favoritos.");
-            }
+        await Promise.all(eliminaciones);
+
+        setFavoritos([]);
+
+        // ===== MENSAJE =====
+        if (Platform.OS === "web") {
+          window.alert("✅ Todos los favoritos han sido eliminados.");
+        } else {
+          Alert.alert("Éxito", "Todos los favoritos han sido eliminados.");
+        }
+
+      } catch (error) {
+        console.log("❌ Error al eliminar favoritos:", error);
+
+        if (Platform.OS === "web") {
+          window.alert("No se pudieron eliminar los favoritos.");
+        } else {
+          Alert.alert("Error", "No se pudieron eliminar los favoritos.");
+        }
+      }
+    };
+
+    // ===== WEB =====
+    if (Platform.OS === "web") {
+
+      const confirmado = window.confirm(
+        "¿Estás seguro de eliminar todos los favoritos?"
+      );
+
+      if (confirmado) {
+        ejecutarEliminacion();
+      }
+
+    } else {
+
+      // ===== MOBILE =====
+      Alert.alert(
+        "Eliminar todos",
+        "¿Estás seguro de que quieres borrar todas tus películas favoritas?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Eliminar",
+            style: "destructive",
+            onPress: ejecutarEliminacion,
           },
-        },
-      ]
-    );
+        ]
+      );
+    }
   };
 
   const eliminarFavorito = async (peliculaId: number) => {
